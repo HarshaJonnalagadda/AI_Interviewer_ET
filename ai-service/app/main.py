@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
-from app.routers import interview, poster, synthesis, voice
+from app.routers import ingest, interview, poster, synthesis, voice
 
 app = FastAPI(title="StarCanvas AI Service")
 
@@ -18,6 +18,7 @@ app.include_router(synthesis.router)
 app.include_router(interview.router)
 app.include_router(voice.router)
 app.include_router(poster.router)
+app.include_router(ingest.router)
 
 
 @app.get("/health")

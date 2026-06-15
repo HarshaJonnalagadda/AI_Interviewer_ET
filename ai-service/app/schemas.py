@@ -60,12 +60,34 @@ class FilmContext(CamelModel):
     context_notes: str | None = None
 
 
+class ProcessedSource(CamelModel):
+    label: str
+    summary: str
+
+
 class SynthesizeRequest(CamelModel):
     film: FilmContext
+    sources: list[ProcessedSource] = []
 
 
 class SynthesizeResponse(CamelModel):
     pack: FilmIntelligencePack
+
+
+# ───────────── Ingestion ─────────────
+
+
+class IngestRequest(CamelModel):
+    source_type: Literal["teaser", "trailer", "song", "interview", "reference", "poster"]
+    source_url: str | None = None
+    image_base64: str | None = None
+    image_media_type: str | None = None
+    film: FilmContext
+
+
+class IngestResponse(CamelModel):
+    label: str
+    summary: str
 
 
 # ───────────── Greeting ─────────────

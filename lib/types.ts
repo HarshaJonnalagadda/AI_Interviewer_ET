@@ -124,3 +124,19 @@ export interface PosterExtraction {
 }
 
 export type BotStateId = 'idle' | 'listen' | 'think' | 'speak' | 'reveal';
+
+export type IngestionSourceType = 'poster' | 'teaser' | 'trailer' | 'song' | 'interview' | 'reference';
+export type IngestionStatus = 'pending' | 'processing' | 'done' | 'failed';
+
+export interface IngestionSource {
+  id: string;
+  film_config_id: string;
+  source_type: IngestionSourceType;
+  source_url: string | null;
+  file_path: string | null;
+  status: IngestionStatus;
+  result: { label: string; summary: string } | null;
+  error_message: string | null;
+  retry_count: number;
+  created_at: string;
+}

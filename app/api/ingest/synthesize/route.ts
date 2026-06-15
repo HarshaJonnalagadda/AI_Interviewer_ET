@@ -22,9 +22,19 @@ export async function POST(req: NextRequest) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   if (!film) return NextResponse.json({ error: 'Film not found' }, { status: 404 });
 
+  const { data: doneSources } = await supabase
+    .from('ingestion_queue')
+    .select('result')
+    .eq('film_config_id', film.id)
+    .eq('status', 'done');
+
+  const sources = (doneSources ?? [])
+    .map((s) => s.result as { label: string; summary: string } | null)
+    .filter((r): r is { label: string; summary: string } => !!r);
+
   let pack;
   try {
-    pack = await synthesizePack(film as FilmConfig);
+    pack = await synthesizePack(film as FilmConfig, sources);
   } catch (e) {
     return NextResponse.json(
       { error: e instanceof Error ? e.message : 'Synthesis failed' },

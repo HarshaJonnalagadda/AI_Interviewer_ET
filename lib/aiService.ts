@@ -1,4 +1,4 @@
-import type { FilmConfig, FilmIntelligencePack, Language, PosterExtraction } from './types';
+import type { FilmConfig, FilmIntelligencePack, IngestionSourceType, Language, PosterExtraction } from './types';
 
 const BASE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000';
 
@@ -33,9 +33,23 @@ export function filmContext(film: FilmConfig) {
   };
 }
 
-export async function synthesizePack(film: FilmConfig): Promise<FilmIntelligencePack> {
-  const res = await call<{ pack: FilmIntelligencePack }>('/synthesize', { film: filmContext(film) });
+export async function synthesizePack(
+  film: FilmConfig,
+  sources: { label: string; summary: string }[] = []
+): Promise<FilmIntelligencePack> {
+  const res = await call<{ pack: FilmIntelligencePack }>('/synthesize', { film: filmContext(film), sources });
   return res.pack;
+}
+
+export type ProcessSourcePayload =
+  | { sourceType: Exclude<IngestionSourceType, 'poster'>; sourceUrl: string }
+  | { sourceType: 'poster'; imageBase64: string; imageMediaType: string };
+
+export async function processSource(
+  film: FilmConfig,
+  payload: ProcessSourcePayload
+): Promise<{ label: string; summary: string }> {
+  return call('/ingest/process', { film: filmContext(film), ...payload });
 }
 
 export async function generateGreeting(film: FilmConfig, pack: FilmIntelligencePack) {

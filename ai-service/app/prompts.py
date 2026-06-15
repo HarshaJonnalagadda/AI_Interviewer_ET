@@ -1,23 +1,44 @@
 import json
 
-from app.schemas import FilmContext, FilmIntelligencePack, PosterExtraction
+from app.schemas import FilmContext, FilmIntelligencePack, PosterExtraction, ProcessedSource
 
 LANGUAGE_NAMES = {"te": "Telugu", "hi": "Hindi", "en": "English"}
 
 
-def synthesis_prompt(film: FilmContext) -> str:
-    """Builds a FilmIntelligencePack from manually-entered film context.
+def synthesis_prompt(film: FilmContext, sources: list[ProcessedSource] | None = None) -> str:
+    """Builds a FilmIntelligencePack from manually-entered film context plus
+    any processed sources (posters, YouTube transcripts, articles).
 
-    This is the "quick setup" path used when no video/social ingestion has
-    been run — Claude infers plausible visual motifs, palette, and an
-    emotional arc directly from the admin's notes, marking everything that
-    isn't explicitly grounded in the notes as low-confidence.
+    Claude infers plausible visual motifs, palette, and an emotional arc from
+    the notes and processed sources, and uses its own knowledge of the
+    film/celebrity where helpful. Where it is inferring rather than working
+    from a stated fact, confidence should be marked "low".
     """
+    sources = sources or []
+
+    if sources:
+        processed_sources_section = "\n\n".join(
+            f"SOURCE — {s.label}:\n{s.summary[:2000]}" for s in sources
+        )
+        sources_instructions = (
+            "When a visual motif, dialogue highlight, or sentiment is grounded in one of the "
+            "PROCESSED SOURCES above, set its \"sources\" / attribution to that source's label "
+            "(e.g. \"Teaser: Movie Name\", \"Poster Image\", \"Article: Site Name\") and raise "
+            "confidence accordingly (\"high\" or \"medium\"). Only use \"inferred\" or \"admin notes\" "
+            "when nothing in the processed sources supports it."
+        )
+    else:
+        processed_sources_section = "(none — no ingestion has been run yet)"
+        sources_instructions = (
+            "No processed sources are available — base everything on the admin notes below "
+            "and your own knowledge of the film/celebrity. Where you are inferring rather than "
+            "working from a stated fact, mark confidence as \"low\"."
+        )
+
+    total_sources = 1 + len(sources)
+
     return f"""
-You are building a Film Intelligence Pack for an AI interview host. No video or
-social-media ingestion has been run yet — base everything on the notes below,
-and use your own knowledge of the film/celebrity if you have it. Where you are
-inferring rather than working from a stated fact, mark confidence as "low".
+You are building a Film Intelligence Pack for an AI interview host.
 
 FILM: {film.film_name} ({film.release_year or "unknown year"})
 LANGUAGE: {LANGUAGE_NAMES.get(film.language, film.language)}
@@ -26,6 +47,11 @@ AVOID TOPICS: {", ".join(film.avoid_topics) or "none specified"}
 
 ADMIN NOTES:
 {film.context_notes or "(none provided)"}
+
+PROCESSED SOURCES:
+{processed_sources_section}
+
+{sources_instructions}
 
 Respond ONLY as valid JSON, no markdown, matching this exact shape:
 {{
@@ -49,7 +75,7 @@ Respond ONLY as valid JSON, no markdown, matching this exact shape:
   }},
   "contradictions": ["interesting tensions worth probing, or [] if none"],
   "operatorAvoidTopics": {json.dumps(film.avoid_topics)},
-  "sourcesProcessed": {{"total": 1}}
+  "sourcesProcessed": {{"total": {total_sources}}}
 }}
 
 Note: the key in "celebrity" for things the celebrity lights up about must be
@@ -176,4 +202,20 @@ Film title "{film_name}" in bold geometric sans-serif at bottom, large, legible,
 Tagline "{extraction.tagline}" in small caps above central element, understated.
 Negative space is dominant. The object floats in silence.
 Aspect ratio 2:3 portrait. High contrast edges. No clutter. No textures. No gradients on the object.
+""".strip()
+
+
+def poster_vision_prompt(film: FilmContext) -> str:
+    return f"""
+This image is a movie poster for "{film.film_name}" ({film.release_year or "unknown year"}),
+starring {film.celebrity_name} ({film.celebrity_role}).
+
+Describe it in a short paragraph (4-6 sentences) covering:
+- The dominant colors (name them and give hex codes where you can estimate)
+- The central visual motifs, symbols, or props shown
+- The overall mood/tone the poster conveys
+- Any text, tagline, or typography style visible
+
+Write plain prose, no markdown, no JSON — this description will be fed directly
+into another prompt as a source summary.
 """.strip()

@@ -3,7 +3,8 @@ import { getServerAdmin } from '@/lib/auth/serverAdmin';
 import { createServiceClient } from '@/lib/supabase/service';
 import FilmForm from '../../../components/FilmForm';
 import IntelligencePanel from '../../../components/IntelligencePanel';
-import type { FilmConfig, FilmIntelligencePack } from '@/lib/types';
+import SourcesPanel from '../../../components/SourcesPanel';
+import type { FilmConfig, FilmIntelligencePack, IngestionSource } from '@/lib/types';
 
 export default async function FilmSetupPage({ params }: { params: { slug: string } }) {
   const admin = await getServerAdmin();
@@ -24,6 +25,12 @@ export default async function FilmSetupPage({ params }: { params: { slug: string
     .eq('film_config_id', film.id)
     .maybeSingle();
 
+  const { data: sources } = await supabase
+    .from('ingestion_queue')
+    .select('*')
+    .eq('film_config_id', film.id)
+    .order('created_at', { ascending: true });
+
   return (
     <div className="admin-shell">
       <header className="admin-header">
@@ -34,6 +41,7 @@ export default async function FilmSetupPage({ params }: { params: { slug: string
       </header>
 
       <FilmForm mode="edit" initial={film as FilmConfig} />
+      <SourcesPanel slug={film.slug} initialSources={(sources as IngestionSource[]) ?? []} />
       <IntelligencePanel slug={film.slug} pack={(intelligence?.pack as FilmIntelligencePack) ?? null} />
     </div>
   );
