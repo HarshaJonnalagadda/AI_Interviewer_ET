@@ -5,7 +5,7 @@ import { generateGreeting } from '@/lib/aiService';
 import type { FilmConfig, FilmIntelligencePack } from '@/lib/types';
 
 export async function POST(req: NextRequest) {
-  const adminId = getAdminId(req);
+  const adminId = await getAdminId(req);
   if (!adminId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { filmSlug } = await req.json();

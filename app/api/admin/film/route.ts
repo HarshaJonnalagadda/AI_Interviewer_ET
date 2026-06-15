@@ -4,7 +4,7 @@ import { getAdminId } from '@/lib/auth/requireAdmin';
 import { slugify } from '@/lib/slug';
 
 export async function GET(req: NextRequest) {
-  const adminId = getAdminId(req);
+  const adminId = await getAdminId(req);
   if (!adminId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const supabase = createServiceClient();
@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const adminId = getAdminId(req);
+  const adminId = await getAdminId(req);
   if (!adminId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const body = await req.json();

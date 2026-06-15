@@ -2,9 +2,9 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { SESSION_COOKIE, verifySessionToken } from '@/lib/auth/session';
 
-export default function Home() {
+export default async function Home() {
   const token = cookies().get(SESSION_COOKIE)?.value;
-  const session = token ? verifySessionToken(token) : null;
+  const session = token ? await verifySessionToken(token) : null;
 
   redirect(session ? '/admin' : '/login');
 }

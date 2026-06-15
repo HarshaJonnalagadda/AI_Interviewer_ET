@@ -6,7 +6,7 @@ import IntelligencePanel from '../../../components/IntelligencePanel';
 import type { FilmConfig, FilmIntelligencePack } from '@/lib/types';
 
 export default async function FilmSetupPage({ params }: { params: { slug: string } }) {
-  const admin = getServerAdmin();
+  const admin = await getServerAdmin();
   const supabase = createServiceClient();
 
   const { data: film } = await supabase

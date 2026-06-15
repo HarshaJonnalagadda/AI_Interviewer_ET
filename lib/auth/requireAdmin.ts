@@ -1,8 +1,8 @@
 import { NextRequest } from 'next/server';
 import { SESSION_COOKIE, verifySessionToken } from './session';
 
-export function getAdminId(req: NextRequest): string | null {
+export async function getAdminId(req: NextRequest): Promise<string | null> {
   const token = req.cookies.get(SESSION_COOKIE)?.value;
-  const session = token ? verifySessionToken(token) : null;
+  const session = token ? await verifySessionToken(token) : null;
   return session?.adminId ?? null;
 }

@@ -6,7 +6,7 @@ import { createServiceClient } from '@/lib/supabase/service';
 const LANGUAGE_LABELS: Record<string, string> = { te: 'Telugu', hi: 'Hindi', en: 'English' };
 
 export default async function AdminSessionPage({ params }: { params: { id: string } }) {
-  const admin = getServerAdmin();
+  const admin = await getServerAdmin();
   const supabase = createServiceClient();
 
   const { data: session } = await supabase

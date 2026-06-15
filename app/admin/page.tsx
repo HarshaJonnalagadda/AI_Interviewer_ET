@@ -4,7 +4,7 @@ import { createServiceClient } from '@/lib/supabase/service';
 import LogoutButton from '../components/LogoutButton';
 
 export default async function AdminDashboard() {
-  const admin = getServerAdmin();
+  const admin = await getServerAdmin();
   const supabase = createServiceClient();
 
   const { data: films } = await supabase

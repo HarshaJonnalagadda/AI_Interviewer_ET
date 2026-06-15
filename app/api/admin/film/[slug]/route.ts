@@ -3,7 +3,7 @@ import { createServiceClient } from '@/lib/supabase/service';
 import { getAdminId } from '@/lib/auth/requireAdmin';
 
 export async function GET(req: NextRequest, { params }: { params: { slug: string } }) {
-  const adminId = getAdminId(req);
+  const adminId = await getAdminId(req);
   if (!adminId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const supabase = createServiceClient();
@@ -27,7 +27,7 @@ export async function GET(req: NextRequest, { params }: { params: { slug: string
 }
 
 export async function PUT(req: NextRequest, { params }: { params: { slug: string } }) {
-  const adminId = getAdminId(req);
+  const adminId = await getAdminId(req);
   if (!adminId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const body = await req.json();

@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
 
   await supabase.from('otp_tokens').update({ used: true }).eq('id', token.id);
 
-  const sessionToken = createSessionToken(admin.id, admin.email);
+  const sessionToken = await createSessionToken(admin.id, admin.email);
   const res = NextResponse.json({ ok: true });
   res.cookies.set(SESSION_COOKIE, sessionToken, {
     httpOnly: true,
