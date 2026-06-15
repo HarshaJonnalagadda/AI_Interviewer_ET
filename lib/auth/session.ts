@@ -52,13 +52,23 @@ export async function verifySessionToken(token: string): Promise<{ adminId: stri
   try {
     const decoded = new TextDecoder().decode(base64UrlToBytes(token));
     const parts = decoded.split('.');
-    if (parts.length !== 4) return null;
+    if (parts.length !== 4) {
+      console.error('[session] bad parts count', parts.length, decoded);
+      return null;
+    }
     const [adminId, email, exp, sig] = parts;
     const expected = await sign(`${adminId}.${email}.${exp}`);
-    if (!timingSafeEqualHex(sig, expected)) return null;
-    if (Date.now() > Number(exp)) return null;
+    if (!timingSafeEqualHex(sig, expected)) {
+      console.error('[session] sig mismatch', { sig, expected, hasSecret: !!process.env.SESSION_SECRET });
+      return null;
+    }
+    if (Date.now() > Number(exp)) {
+      console.error('[session] expired', { now: Date.now(), exp });
+      return null;
+    }
     return { adminId, email };
-  } catch {
+  } catch (e) {
+    console.error('[session] verify threw', e);
     return null;
   }
 }
