@@ -65,6 +65,21 @@ export default function LoginForm() {
   };
 
   const handleDigitChange = (idx: number, value: string) => {
+    if (value.length > 1) {
+      const pasted = value.replace(/\D/g, '').slice(0, 6 - idx).split('');
+      if (!pasted.length) return;
+      const next = [...digits];
+      pasted.forEach((d, i) => {
+        next[idx + i] = d;
+      });
+      setDigits(next);
+      const lastIdx = Math.min(idx + pasted.length, 5);
+      inputsRef.current[lastIdx]?.focus();
+      if (next.every((d) => d !== '')) {
+        verifyOtp(next.join(''));
+      }
+      return;
+    }
     if (!/^[0-9]?$/.test(value)) return;
     const next = [...digits];
     next[idx] = value;
