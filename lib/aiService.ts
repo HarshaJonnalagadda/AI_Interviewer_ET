@@ -1,6 +1,6 @@
 import type { FilmConfig, FilmIntelligencePack, IngestionSourceType, Language, PosterExtraction } from './types';
 
-const BASE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000';
+const BASE_URL = (process.env.AI_SERVICE_URL || 'http://localhost:8000').replace(/\/+$/, '');
 
 async function call<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {
