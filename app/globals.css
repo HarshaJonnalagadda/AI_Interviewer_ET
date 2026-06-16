@@ -997,6 +997,29 @@ body {
   transition: all 0.2s;
 }
 .voice-recorder-done:hover { background: rgba(29, 158, 117, 0.2); }
+.vad-status {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+}
+.vad-countdown-bar {
+  width: 160px;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  position: relative;
+}
+.vad-countdown-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform-origin: left;
+  transform: scaleX(var(--progress, 0));
+  background: #c8a55a;
+  transition: transform 0.1s linear;
+}
 
 /* ══════════════════════════════════════════════
    POSTER REVEAL
