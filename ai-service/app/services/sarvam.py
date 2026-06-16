@@ -39,8 +39,9 @@ async def text_to_speech(text: str, language: str) -> str:
             json={
                 "inputs": [text],
                 "target_language_code": lang_code,
-                "speaker": "meera",
+                "speaker": "kabir",
                 "model": "bulbul:v3",
+                "pace": 1.2,
                 "enable_preprocessing": True,
             },
         )

@@ -22,13 +22,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: e instanceof Error ? e.message : 'STT failed' }, { status: 502 });
   }
 
-  // 2. Translate to English (if needed)
+  // 2. Translate to English (if needed and transcript is not already English)
   let translation = transcript;
-  if (film.language !== 'en') {
+  const isAlreadyEnglish = film.language !== 'en' && /^[\x00-\x7F\s.,!?'"()\-:;0-9]+$/.test(transcript.trim());
+  if (film.language !== 'en' && !isAlreadyEnglish) {
     try {
       translation = await translateText(transcript, film.language as 'te' | 'hi');
     } catch (e) {
-      return NextResponse.json({ error: e instanceof Error ? e.message : 'Translation failed' }, { status: 502 });
+      translation = transcript; // show original if translation fails
     }
   }
 

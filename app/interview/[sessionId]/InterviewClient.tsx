@@ -232,7 +232,7 @@ export default function InterviewClient(props: Props) {
       questionText={questionText}
       statusText={phase === 'error' ? errorMsg || 'Something went wrong' : undefined}
       footerRight={`${props.filmName} · ${LANGUAGE_LABELS[props.language]}`}
-      answer={phase === 'thinking' || phase === 'done' ? answer : null}
+      answer={answer}
       waveLevel={phase === 'speaking' || phase === 'listening' ? waveLevel : undefined}
       progressCurrent={turnNumber}
       progressTotal={props.questionCount}

@@ -252,7 +252,7 @@ export default function BotScene({
             <div className="answer-divider" />
             <div className="answer-label">Your answer</div>
             <div className="answer-original">{answer.original}</div>
-            {answer.translation && (
+            {answer.translation && answer.translation !== answer.original && (
               <div className="answer-translation visible">{answer.translation}</div>
             )}
           </>
