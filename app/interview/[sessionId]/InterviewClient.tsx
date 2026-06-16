@@ -98,6 +98,28 @@ export default function InterviewClient(props: Props) {
     };
   }, []);
 
+  // Play the viewer greeting aloud when the page first loads in greeting phase
+  useEffect(() => {
+    if (props.status !== 'greeting') return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('/api/interview/greet', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId: props.sessionId }),
+        });
+        if (!res.ok || cancelled) return;
+        const data = await res.json();
+        if (!cancelled) playAudio(data.audioBase64, data.mimeType, () => {});
+      } catch {
+        // greeting audio is optional — silently skip if browser blocks autoplay
+      }
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Already finished — go straight to the poster reveal
   useEffect(() => {
     if (props.status === 'completed' || props.status === 'poster_generated') {

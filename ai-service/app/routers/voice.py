@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.auth import require_api_key
@@ -10,6 +12,9 @@ from app.schemas import (
     TtsResponse,
 )
 from app.services import elevenlabs, sarvam, whisper
+from app.services import openai_tts
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(dependencies=[Depends(require_api_key)])
 
@@ -28,14 +33,25 @@ async def stt(req: SttRequest) -> SttResponse:
 @router.post("/tts", response_model=TtsResponse)
 async def tts(req: TtsRequest) -> TtsResponse:
     if req.language == "en":
-        audio = await elevenlabs.text_to_speech(req.text)
-        mime_type = "audio/mpeg"
+        try:
+            audio = await elevenlabs.text_to_speech(req.text)
+            return TtsResponse(audio_base64=audio, mime_type="audio/mpeg")
+        except Exception:
+            logger.exception("ElevenLabs TTS failed, falling back to OpenAI TTS")
+            audio, mime_type = await openai_tts.text_to_speech(req.text)
+            return TtsResponse(audio_base64=audio, mime_type=mime_type)
+
     elif req.language in ("te", "hi"):
-        audio = await sarvam.text_to_speech(req.text, req.language)
-        mime_type = "audio/wav"
+        try:
+            audio = await sarvam.text_to_speech(req.text, req.language)
+            return TtsResponse(audio_base64=audio, mime_type="audio/wav")
+        except Exception:
+            logger.exception("Sarvam TTS failed, falling back to OpenAI TTS")
+            audio, mime_type = await openai_tts.text_to_speech(req.text)
+            return TtsResponse(audio_base64=audio, mime_type=mime_type)
+
     else:
         raise HTTPException(status_code=400, detail=f"Unsupported language: {req.language}")
-    return TtsResponse(audio_base64=audio, mime_type=mime_type)
 
 
 @router.post("/translate", response_model=TranslateResponse)
