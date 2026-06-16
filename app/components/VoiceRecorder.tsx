@@ -243,9 +243,6 @@ export default function VoiceRecorder({ active, onResult, onLevel, onRecordingCh
           {vadPhase === 'finishing' && (
             <div className="vad-countdown-bar" style={{ '--progress': silenceProgress } as React.CSSProperties} />
           )}
-          <button type="button" className="voice-recorder-done" onClick={stop}>
-            Done answering
-          </button>
         </>
       )}
     </div>
