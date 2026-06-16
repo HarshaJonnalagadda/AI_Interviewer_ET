@@ -7,11 +7,17 @@ export default async function RevealPage({ params }: { params: { sessionId: stri
 
   const { data: session } = await supabase
     .from('sessions')
-    .select('id, film_name, celebrity_name, status')
+    .select('id, film_name, celebrity_name, status, film_config_id')
     .eq('id', params.sessionId)
     .maybeSingle();
 
   if (!session) notFound();
+
+  const { data: filmConfig } = await supabase
+    .from('film_configs')
+    .select('slug')
+    .eq('id', session.film_config_id)
+    .maybeSingle();
 
   const { data: posterElements } = await supabase
     .from('poster_elements')
@@ -31,6 +37,7 @@ export default async function RevealPage({ params }: { params: { sessionId: stri
     <RevealClient
       sessionId={session.id}
       filmName={session.film_name}
+      filmSlug={filmConfig?.slug ?? ''}
       celebrityName={session.celebrity_name}
       initialPosterElements={posterElements ?? null}
       initialPosters={posters ?? []}

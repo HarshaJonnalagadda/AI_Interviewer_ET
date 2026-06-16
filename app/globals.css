@@ -1088,6 +1088,13 @@ body {
   font-style: italic;
   max-width: 500px;
 }
+.reveal-hint {
+  margin-top: 8px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
 .reveal-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -1104,7 +1111,8 @@ body {
   border-radius: 14px;
   padding: 12px;
   background: rgba(10, 8, 5, 0.6);
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
 }
 .reveal-card.reveal-selected {
   border-color: #1d9e75;
@@ -1115,26 +1123,55 @@ body {
   border-radius: 8px;
   display: block;
 }
-.reveal-select-btn {
+.reveal-select-indicator {
   width: 100%;
-  background: rgba(200, 165, 90, 0.1);
-  border: 1px solid rgba(200, 165, 90, 0.3);
-  color: rgba(200, 165, 90, 0.85);
-  border-radius: 8px;
-  padding: 8px 16px;
+  padding: 7px 0;
   font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.03em;
-  cursor: pointer;
+  letter-spacing: 0.04em;
   text-align: center;
+  color: rgba(200, 165, 90, 0.6);
+  transition: color 0.2s;
+}
+.reveal-card.reveal-selected .reveal-select-indicator {
+  color: #1d9e75;
+}
+.reveal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 2.5rem;
+}
+.reveal-download-btn {
+  background: rgba(29, 158, 117, 0.15);
+  border: 1px solid rgba(29, 158, 117, 0.5);
+  color: #1d9e75;
+  border-radius: 99px;
+  padding: 10px 28px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
   transition: all 0.2s;
 }
-.reveal-select-btn:hover { background: rgba(200, 165, 90, 0.18); }
-.reveal-select-btn:disabled { cursor: default; opacity: 0.6; }
-.reveal-card.reveal-selected .reveal-select-btn {
-  background: rgba(29, 158, 117, 0.15);
-  border-color: #1d9e75;
-  color: #1d9e75;
+.reveal-download-btn:hover { background: rgba(29, 158, 117, 0.25); }
+.reveal-download-btn:disabled { opacity: 0.5; cursor: default; }
+.reveal-view-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.5);
+  border-radius: 99px;
+  padding: 10px 24px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.reveal-view-btn:hover { border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.75); }
+.reveal-error {
+  color: #e2685a;
+  font-size: 13px;
+  margin-top: 12px;
 }
 
 /* ══════════════════════════════════════════════
