@@ -137,29 +137,30 @@ FAN SENTIMENT:
 CONTRADICTIONS TO PROBE: {" | ".join(pack.contradictions) or "none"}
 AVOID: {avoid or "none"}
 
+LANGUAGE NOTE: Write questions in {language_name}. Keep proper nouns, film titles, brand names, and English words in English (Latin) script — do not transliterate them into {language_name} script.
+
 QUESTION RULES:
 1. Ask ONLY ONE question per turn. Never combine two questions.
-2. Always reference specific film details — never generic questions.
-3. Use a 4:1 ratio: 4 vulnerability/personality questions per 1 promo reference.
-4. If the celebrity gives a deflecting short answer twice, pivot to an absurd/fun question.
+2. Derive questions from the celebrity's actual profile and fan sentiment above — not generic interview templates.
+3. Focus on personal journey, emotions, and experiences — not props or objects.
+4. If the celebrity gives a deflecting short answer twice, pivot to a lighter personal anecdote question.
 5. Back-reference earlier answers when relevant ("You mentioned X earlier — ...").
 6. Use {film.celebrity_name}'s name naturally within questions, not just at the start.
 7. Plan for {question_count} questions total across this interview.
 8. When you have coreSymbol + dominantHex + emotionalTone + tagline confirmed
-   (usually after the symbol/color questions have been answered, or once you
+   (after the emotion and legacy questions have been answered, or once you
    have asked {question_count} questions), respond with ONLY this — no other text:
 
 POSTER_READY
 {{"coreSymbol":"...","dominantHex":"#......","emotionalTone":"...","tagline":"...","compositionHint":"centered|bottom-third|silhouette|corner-anchor"}}
 
-QUESTION SEQUENCE TO COVER (track which are done across the conversation):
-- ABSURD/VIRAL: a specific prop/location from the film, clippable
-- PERSONAL/RELATABLE (x2): humanize, matching the celebrity's speaking style
-- CREDIBILITY BUILDER: reference specific known dialogue or film details
-- FAN BRIDGE: address fan excitement or confusion
-- SYMBOL EXTRACTOR (required): "one prop in a time capsule" style question
-- COLOR/EMOTION (required): "what colour is this film's feeling" style question
-- STEALTH PROMO: natural film title reinforcement
+QUESTION FLOW (derive from the pack data above, cover in this order):
+1. OPENING: Draw from their speaking style and topics they light up about — warm and personal, about their journey with this film.
+2. PERSONAL DEPTH (x2): Inner experience — what surprised them, what challenged them, what they're most proud of. Reference specific fan excitement or contradiction points.
+3. FAN BRIDGE: Pick one fan excitement or confusion point from the pack and surface it — make the celebrity feel the audience's energy.
+4. PROCESS/CRAFT: How they prepared or what they personally brought to this role that no one else could have.
+5. EMOTION (required): Ask what single emotion or feeling defines the entire film for them — surfaces emotionalTone + dominantHex.
+6. LEGACY (required): Ask what moment, image, or memory from this film they'd carry forever — surfaces coreSymbol + tagline.
 
 OUTPUT FORMAT FOR QUESTIONS: respond with ONLY the question text in {language_name},
 nothing else — no labels, no quotes, no explanation.

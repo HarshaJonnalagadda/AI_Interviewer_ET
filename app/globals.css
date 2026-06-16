@@ -1022,6 +1022,51 @@ body {
 }
 
 /* ══════════════════════════════════════════════
+   CHAT HISTORY
+   ══════════════════════════════════════════════ */
+.chat-history {
+  width: 100%;
+  max-width: 580px;
+  max-height: 240px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0 4px 4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200,165,90,0.2) transparent;
+}
+.chat-history::-webkit-scrollbar { width: 3px; }
+.chat-history::-webkit-scrollbar-thumb { background: rgba(200,165,90,0.25); border-radius: 2px; }
+.chat-turn { display: flex; flex-direction: column; gap: 4px; }
+.chat-q {
+  font-size: 11px;
+  color: rgba(255,255,255,0.28);
+  line-height: 1.45;
+  padding: 5px 10px;
+  border-left: 2px solid rgba(200,165,90,0.18);
+  font-style: italic;
+}
+.chat-a {
+  font-size: 13px;
+  color: rgba(255,255,255,0.72);
+  line-height: 1.5;
+  padding: 7px 12px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  align-self: flex-end;
+  max-width: 88%;
+}
+.chat-a-translation {
+  font-size: 11px;
+  color: rgba(255,255,255,0.32);
+  line-height: 1.4;
+  padding: 1px 12px;
+  align-self: flex-end;
+  max-width: 88%;
+}
+
+/* ══════════════════════════════════════════════
    POSTER REVEAL
    ══════════════════════════════════════════════ */
 .reveal-wrap {

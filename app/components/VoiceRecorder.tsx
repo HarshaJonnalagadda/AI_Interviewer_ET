@@ -7,7 +7,7 @@ const VAD_CONFIG = {
   noiseMultiplier: 3.0,     // dynamic threshold = ambient_rms × this
   fallbackRmsThreshold: 0.008, // floor if calibration gives near-zero
   minRecordingMs: 2000,     // absolute minimum before any auto-stop
-  silenceThresholdMs: 3000, // stop after this much silence post-speech
+  silenceThresholdMs: 15000, // stop after this much silence post-speech
   maxRecordingMs: 90000,
   peakHoldMs: 500,
 };

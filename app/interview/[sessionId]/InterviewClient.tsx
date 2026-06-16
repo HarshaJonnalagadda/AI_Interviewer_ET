@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import BotScene, { type BotSceneAnswer } from '@/app/components/BotScene';
+import BotScene, { type BotSceneAnswer, type ChatTurn } from '@/app/components/BotScene';
 import VoiceRecorder from '@/app/components/VoiceRecorder';
 import type { BotStateId, Language, SessionStatus } from '@/lib/types';
 
@@ -42,8 +42,10 @@ export default function InterviewClient(props: Props) {
   );
   const [turnNumber, setTurnNumber] = useState(props.currentTurn || 0);
   const [answer, setAnswer] = useState<BotSceneAnswer | null>(null);
+  const [chatHistory, setChatHistory] = useState<ChatTurn[]>([]);
   const [waveLevel, setWaveLevel] = useState(0);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const currentQuestionRef = useRef<string>('');
 
   const audioCtxRef = useRef<AudioContext | null>(null);
   const rafRef = useRef<number | null>(null);
@@ -140,6 +142,7 @@ export default function InterviewClient(props: Props) {
       if (!res.ok) throw new Error(data.error || 'Failed to load question');
 
       setTurnNumber(data.turnNumber);
+      currentQuestionRef.current = data.questionText;
       setQuestionText(data.questionText);
       if (data.answered) {
         setAnswer({ original: data.answerTranscript, translation: data.answerTranslation });
@@ -172,6 +175,7 @@ export default function InterviewClient(props: Props) {
       if (!res.ok) throw new Error(data.error || 'Failed to begin interview');
 
       setTurnNumber(data.turnNumber);
+      currentQuestionRef.current = data.questionText;
       setQuestionText(data.questionText);
       setAnswer(null);
       setPhase('speaking');
@@ -195,7 +199,19 @@ export default function InterviewClient(props: Props) {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Failed to process answer');
 
-        setAnswer({ original: data.transcript, translation: data.translation });
+        // Push completed Q+A into chat history before changing the question
+        const completedQuestion = currentQuestionRef.current;
+        if (completedQuestion) {
+          setChatHistory((prev) => [
+            ...prev,
+            {
+              question: completedQuestion,
+              answer: data.transcript,
+              translation: data.translation !== data.transcript ? data.translation : undefined,
+            },
+          ]);
+        }
+        setAnswer(null);
 
         if (data.type === 'poster_ready') {
           setQuestionText('Thank you. Your poster is being created now...');
@@ -205,6 +221,7 @@ export default function InterviewClient(props: Props) {
         }
 
         setTurnNumber(data.turnNumber);
+        currentQuestionRef.current = data.questionText;
         setQuestionText(data.questionText);
         setPhase('speaking');
         playAudio(data.audioBase64, data.mimeType, () => setPhase('listening'));
@@ -233,6 +250,7 @@ export default function InterviewClient(props: Props) {
       statusText={phase === 'error' ? errorMsg || 'Something went wrong' : undefined}
       footerRight={`${props.filmName} · ${LANGUAGE_LABELS[props.language]}`}
       answer={answer}
+      chatHistory={chatHistory}
       waveLevel={phase === 'speaking' || phase === 'listening' ? waveLevel : undefined}
       progressCurrent={turnNumber}
       progressTotal={props.questionCount}

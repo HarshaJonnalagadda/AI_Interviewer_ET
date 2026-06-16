@@ -102,6 +102,12 @@ export interface BotSceneAnswer {
   translation?: string | null;
 }
 
+export interface ChatTurn {
+  question: string;
+  answer: string;
+  translation?: string;
+}
+
 export interface BotSceneProps {
   state: BotStateId;
   questionLabel?: string;
@@ -109,6 +115,7 @@ export interface BotSceneProps {
   statusText?: string;
   footerRight?: string;
   answer?: BotSceneAnswer | null;
+  chatHistory?: ChatTurn[];
   waveLevel?: number;
   progressCurrent?: number;
   progressTotal?: number;
@@ -122,6 +129,7 @@ export default function BotScene({
   statusText,
   footerRight,
   answer,
+  chatHistory,
   waveLevel,
   progressCurrent,
   progressTotal,
@@ -240,23 +248,26 @@ export default function BotScene({
         </div>
       )}
 
+      {chatHistory && chatHistory.length > 0 && (
+        <div className="chat-history">
+          {chatHistory.map((turn, i) => (
+            <div key={i} className="chat-turn">
+              <div className="chat-q">{turn.question}</div>
+              <div className="chat-a">{turn.answer}</div>
+              {turn.translation && turn.translation !== turn.answer && (
+                <div className="chat-a-translation">{turn.translation}</div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="q-card">
         {questionLabel && <div className="q-label">{questionLabel}</div>}
         <div className="q-text">
           {displayedText}
           <span className="q-cursor" />
         </div>
-
-        {answer && (
-          <>
-            <div className="answer-divider" />
-            <div className="answer-label">Your answer</div>
-            <div className="answer-original">{answer.original}</div>
-            {answer.translation && answer.translation !== answer.original && (
-              <div className="answer-translation visible">{answer.translation}</div>
-            )}
-          </>
-        )}
       </div>
 
       <div className="status-bar">
