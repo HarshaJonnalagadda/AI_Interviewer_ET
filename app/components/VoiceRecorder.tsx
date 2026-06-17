@@ -3,13 +3,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const VAD_CONFIG = {
-  calibrationMs: 600,       // sample ambient noise before activating VAD
-  noiseMultiplier: 3.0,     // dynamic threshold = ambient_rms × this
-  fallbackRmsThreshold: 0.008, // floor if calibration gives near-zero
+  calibrationMs: 1500,      // longer window captures earphone cable transients
+  noiseMultiplier: 4.5,     // dynamic threshold = ambient_rms × this
+  fallbackRmsThreshold: 0.015, // higher floor for clean mics (earphones)
   minRecordingMs: 2000,     // absolute minimum before any auto-stop
   silenceThresholdMs: 15000, // stop after this much silence post-speech
   maxRecordingMs: 90000,
   peakHoldMs: 500,
+  calibrationPercentile: 0.90, // use 90th-percentile of samples, not mean
 };
 
 type Props = {
@@ -153,13 +154,14 @@ export default function VoiceRecorder({ active, onResult, onLevel, onRecordingCh
               rafRef.current = requestAnimationFrame(tick);
               return;
             }
-            // Compute dynamic threshold from ambient samples
-            const samples = calibrationSamplesRef.current;
-            const ambientRms = samples.length > 0
-              ? samples.reduce((a, b) => a + b, 0) / samples.length
-              : 0;
+            // Compute dynamic threshold using 90th-percentile of ambient samples.
+            // Percentile is more robust than mean for earphone mics where cable
+            // handling during calibration creates high transient spikes.
+            const samples = calibrationSamplesRef.current.slice().sort((a, b) => a - b);
+            const pIdx = Math.floor(samples.length * VAD_CONFIG.calibrationPercentile);
+            const ambientP90 = samples.length > 0 ? (samples[pIdx] ?? samples[samples.length - 1]) : 0;
             dynamicThresholdRef.current = Math.max(
-              ambientRms * VAD_CONFIG.noiseMultiplier,
+              ambientP90 * VAD_CONFIG.noiseMultiplier,
               VAD_CONFIG.fallbackRmsThreshold,
             );
             calibrationDoneRef.current = true;
