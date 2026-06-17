@@ -44,6 +44,7 @@ export interface FilmConfig {
   context_notes: string | null;
   director: string | null;
   lead_actors: string[];
+  movie_language: string | null;
   active: boolean;
   created_at: string;
 }

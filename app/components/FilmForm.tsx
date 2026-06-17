@@ -23,6 +23,7 @@ export default function FilmForm({ mode, initial }: FilmFormProps) {
   const [contextNotes, setContextNotes] = useState(initial?.context_notes ?? '');
   const [director, setDirector] = useState(initial?.director ?? '');
   const [leadActors, setLeadActors] = useState((initial?.lead_actors ?? []).join(', '));
+  const [movieLanguage, setMovieLanguage] = useState(initial?.movie_language ?? '');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,6 +51,7 @@ export default function FilmForm({ mode, initial }: FilmFormProps) {
         .split(',')
         .map((a) => a.trim())
         .filter(Boolean),
+      movieLanguage: movieLanguage.trim() || null,
     };
 
     try {
@@ -88,12 +90,16 @@ export default function FilmForm({ mode, initial }: FilmFormProps) {
           <input value={filmName} onChange={(e) => setFilmName(e.target.value)} required />
         </label>
         <label>
-          Language
+          Interview Language
           <select value={language} onChange={(e) => setLanguage(e.target.value as Language)}>
             <option value="te">Telugu</option>
             <option value="hi">Hindi</option>
             <option value="en">English</option>
           </select>
+        </label>
+        <label>
+          Movie Language
+          <input value={movieLanguage} onChange={(e) => setMovieLanguage(e.target.value)} placeholder="Telugu, Tamil, Hindi…" />
         </label>
         <label>
           Release Year

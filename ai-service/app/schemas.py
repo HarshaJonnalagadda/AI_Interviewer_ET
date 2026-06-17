@@ -58,6 +58,7 @@ class FilmContext(CamelModel):
     celebrity_pronoun: str = "they"
     avoid_topics: list[str] = []
     context_notes: str | None = None
+    movie_language: str | None = None
 
 
 class ProcessedSource(CamelModel):

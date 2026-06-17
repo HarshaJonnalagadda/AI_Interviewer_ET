@@ -44,6 +44,7 @@ export async function PUT(req: NextRequest, { params }: { params: { slug: string
     contextNotes,
     director,
     leadActors,
+    movieLanguage,
   } = body;
 
   const supabase = createServiceClient();
@@ -62,6 +63,7 @@ export async function PUT(req: NextRequest, { params }: { params: { slug: string
       context_notes: contextNotes || null,
       director: director || null,
       lead_actors: leadActors || [],
+      movie_language: movieLanguage || null,
     })
     .eq('slug', params.slug)
     .eq('admin_id', adminId)

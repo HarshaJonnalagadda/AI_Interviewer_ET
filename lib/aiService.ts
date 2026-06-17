@@ -30,6 +30,7 @@ export function filmContext(film: FilmConfig) {
     celebrityPronoun: film.celebrity_pronoun,
     avoidTopics: film.avoid_topics,
     contextNotes: film.context_notes ?? undefined,
+    movieLanguage: film.movie_language ?? undefined,
   };
 }
 

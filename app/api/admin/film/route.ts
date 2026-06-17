@@ -36,6 +36,7 @@ export async function POST(req: NextRequest) {
     contextNotes,
     director,
     leadActors,
+    movieLanguage,
   } = body;
 
   if (!filmName || !language || !celebrityName || !celebrityRole) {
@@ -70,6 +71,7 @@ export async function POST(req: NextRequest) {
       context_notes: contextNotes || null,
       director: director || null,
       lead_actors: leadActors || [],
+      movie_language: movieLanguage || null,
     })
     .select()
     .single();

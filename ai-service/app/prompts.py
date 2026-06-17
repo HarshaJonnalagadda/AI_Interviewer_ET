@@ -41,7 +41,8 @@ def synthesis_prompt(film: FilmContext, sources: list[ProcessedSource] | None = 
 You are building a Film Intelligence Pack for an AI interview host.
 
 FILM: {film.film_name} ({film.release_year or "unknown year"})
-LANGUAGE: {LANGUAGE_NAMES.get(film.language, film.language)}
+MOVIE LANGUAGE: {film.movie_language or LANGUAGE_NAMES.get(film.language, film.language)}
+INTERVIEW LANGUAGE: {LANGUAGE_NAMES.get(film.language, film.language)}
 CELEBRITY: {film.celebrity_name} ({film.celebrity_role})
 AVOID TOPICS: {", ".join(film.avoid_topics) or "none specified"}
 
