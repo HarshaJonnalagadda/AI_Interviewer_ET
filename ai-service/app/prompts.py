@@ -190,20 +190,29 @@ Interview transcript:
 {transcript}
 
 SYMBOL DESIGN RULES:
-1. The celebrity's own words about this film take absolute priority.
+1. The celebrity's own words about this film take absolute priority over everything else.
+   Mine the transcript for: a prop they mentioned, a scene they described, a feeling they named with an image, a recurring word or metaphor.
+   That grounded detail is always better than anything invented.
 2. The coreSymbol must be ONE concrete object — drawable as a flat vector illustration.
 3. The symbol must work on TWO levels: (a) what it literally is, (b) what it secretly means about the film.
-4. CHARACTER COUNT RULE: If there are {cast_count} main characters, encode that count in the symbol cleverly.
-   Examples: 3-person love story → object naturally occurring in threes, or a familiar object cracked/split into 3;
-   2-person romance → two fish in a bowl, two straws in one glass; single protagonist → one iconic object.
-   A "broken heart" split into {cast_count} is valid ONLY if {cast_count} == 2 and the film is specifically about heartbreak.
-   Prefer SURPRISING SPECIFICITY: "3 cocktail glasses, two touching and one tipped away" beats "a broken heart".
-5. The object must be simple enough to render as flat illustration — no complex scenes.
-6. Tagline should ideally carry a double meaning or pun tied to the film's theme.
+4. TITLE TRAP — explicitly forbidden: do NOT use the film's title word as the symbol.
+   If the film is called "Cocktail", don't use a cocktail glass. If it's "Dil Se", don't use a heart.
+   The title is already printed on the poster. The symbol must earn its place through meaning, not name-matching.
+5. CHARACTER COUNT RULE: If there are {cast_count} main characters, encode that number into the symbol organically.
+   The object itself should naturally suggest the cast count — through multiples, divisions, groupings, or structural parts.
+   Examples by count:
+     1 protagonist → a single iconic object (one chair, one candle, one road stretching away)
+     2 characters → naturally paired objects (two fish in a bowl, two chairs facing each other, two straws in one glass, a book open to two pages)
+     3 characters → object that splits or occurs in threes (three keys on a ring, three petals on a flower, an object fractured into three, three objects arranged in a triangle)
+     4+ characters → a cluster or a container holding that many elements
+   The pairing/count should feel discovered, not forced — a viewer should get a small "aha" when they notice it.
+   Avoid generic emotional symbols (broken heart, tears) unless the film is specifically about that emotion AND the count maps cleanly.
+6. The object must be simple enough to render as flat illustration — no complex scenes.
+7. Tagline should ideally carry a double meaning or pun tied to the film's theme — NOT a description of the object.
 
 Respond ONLY as valid JSON, no markdown:
 {{
-  "coreSymbol": "precise object description — include structural details that encode character count or central tension (e.g. 'three cocktail glasses arranged in a triangle, the center one half-empty' not just 'a cocktail glass')",
+  "coreSymbol": "precise object description grounded in the transcript — include structural details that encode character count or central tension. Be specific: 'three keys on a ring, one bent' not just 'keys'; 'a phone face-down on a table' not just 'a phone'.",
   "dominantHex": "#XXXXXX — the film's emotional color",
   "emotionalTone": "two words maximum",
   "tagline": "under 8 words — conceptual, earns its presence through double meaning",
