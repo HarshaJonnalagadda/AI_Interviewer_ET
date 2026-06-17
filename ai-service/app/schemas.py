@@ -174,7 +174,8 @@ class PosterExtraction(CamelModel):
     emotional_tone: str
     tagline: str
     composition_hint: Literal["centered", "bottom-third", "silhouette", "corner-anchor"]
-    symbol_source: Literal["celebrity-said", "pre-loaded"]
+    symbol_source: Literal["celebrity-said", "pre-loaded", "film-intel", "both"]
+    cast_count_used: int | None = None
 
 
 class PosterExtractRequest(CamelModel):

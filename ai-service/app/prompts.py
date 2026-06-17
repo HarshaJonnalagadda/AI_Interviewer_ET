@@ -169,55 +169,79 @@ nothing else — no labels, no quotes, no explanation.
 
 
 def poster_extraction_prompt(film: FilmContext, pack: FilmIntelligencePack, transcript: str) -> str:
-    high_confidence_motifs = ", ".join(m.motif for m in pack.visual_motifs if m.confidence == "high")
-    cast_count = len(film.lead_actors) if film.lead_actors else 1
-    cast_line = (
-        f"Lead cast ({cast_count} people): {', '.join(film.lead_actors)}"
+    all_motifs = "\n".join(
+        f"  - {m.motif} [{m.confidence}, source: {', '.join(m.sources)}]"
+        for m in pack.visual_motifs
+    ) or "  none identified"
+    dialogue_highlights = "\n".join(f"  - {d}" for d in pack.dialogue_highlights) or "  none"
+    fan_excitement = "\n".join(f"  - {e}" for e in pack.fan_sentiment.excitement) or "  none"
+    contradictions = "\n".join(f"  - {c}" for c in pack.contradictions) or "  none"
+    lead_hint = (
+        f"Form hint — lead cast entered: {', '.join(film.lead_actors)} ({len(film.lead_actors)} names)"
         if film.lead_actors else
-        f"Celebrity: {film.celebrity_name}"
+        f"No lead cast entered in form. Celebrity: {film.celebrity_name} ({film.celebrity_role})"
     )
 
     return f"""
 You are designing a minimalist Indian film poster in the tradition of Andhadhun, Dil Se, OK Kanmani, and Piku.
 Your task: extract the SINGLE visual metaphor object that carries the entire soul of this film.
 
+═══ FILM INTELLIGENCE (from ingested sources + AI synthesis) ═══
 Film: {film.film_name}
-{cast_line}
-Known motifs (use only if transcript gives nothing better): {high_confidence_motifs or "none"}
-Known palette: {", ".join(pack.dominant_colors)}
+Emotional arc: {pack.emotional_arc}
+Dominant palette: {", ".join(pack.dominant_colors)}
 
-Interview transcript:
+Visual motifs identified:
+{all_motifs}
+
+Key dialogue / memorable lines:
+{dialogue_highlights}
+
+What fans are most excited/curious about:
+{fan_excitement}
+
+Interesting tensions in the film:
+{contradictions}
+
+{lead_hint}
+
+═══ INTERVIEW TRANSCRIPT (celebrity's own words — highest weight) ═══
 {transcript}
 
-SYMBOL DESIGN RULES:
-1. The celebrity's own words about this film take absolute priority over everything else.
-   Mine the transcript for: a prop they mentioned, a scene they described, a feeling they named with an image, a recurring word or metaphor.
-   That grounded detail is always better than anything invented.
-2. The coreSymbol must be ONE concrete object — drawable as a flat vector illustration.
-3. The symbol must work on TWO levels: (a) what it literally is, (b) what it secretly means about the film.
-4. TITLE TRAP — explicitly forbidden: do NOT use the film's title word as the symbol.
-   If the film is called "Cocktail", don't use a cocktail glass. If it's "Dil Se", don't use a heart.
-   The title is already printed on the poster. The symbol must earn its place through meaning, not name-matching.
-5. CHARACTER COUNT RULE: If there are {cast_count} main characters, encode that number into the symbol organically.
-   The object itself should naturally suggest the cast count — through multiples, divisions, groupings, or structural parts.
-   Examples by count:
-     1 protagonist → a single iconic object (one chair, one candle, one road stretching away)
-     2 characters → naturally paired objects (two fish in a bowl, two chairs facing each other, two straws in one glass, a book open to two pages)
-     3 characters → object that splits or occurs in threes (three keys on a ring, three petals on a flower, an object fractured into three, three objects arranged in a triangle)
+═══ PRIORITY HIERARCHY ═══
+Use ALL of the above, but weight them in this order:
+  1. TRANSCRIPT — what the celebrity said about this specific film (scenes, props, feelings, images they described)
+  2. FILM INTELLIGENCE — motifs, arc, dialogue, fan sentiment from ingested sources
+  3. FORM HINTS — lead cast count from the form is a starting point; infer the actual main character count
+     from the transcript and film intelligence together. If sources suggest a different count, trust them.
+
+═══ SYMBOL DESIGN RULES ═══
+1. The coreSymbol must be ONE concrete object — drawable as a flat vector illustration.
+2. The symbol must work on TWO levels: (a) what it literally is, (b) what it secretly means about the film.
+3. TITLE TRAP — forbidden: do NOT use the film's title word as the symbol.
+   (Cocktail → not a cocktail glass; Dil Se → not a heart; Piku → not a toilet.)
+   The title is already on the poster. The symbol earns its place through meaning, not name-matching.
+4. CHARACTER COUNT RULE: Infer the number of main characters from all sources above.
+   Then encode that count organically into the symbol — through multiples, divisions, groupings, or parts.
+   The count should feel discovered, not labelled:
+     1 protagonist → a single iconic object
+     2 characters → paired objects or a split object (two halves, two sides)
+     3 characters → object that occurs in threes or splits into three parts
      4+ characters → a cluster or a container holding that many elements
-   The pairing/count should feel discovered, not forced — a viewer should get a small "aha" when they notice it.
-   Avoid generic emotional symbols (broken heart, tears) unless the film is specifically about that emotion AND the count maps cleanly.
-6. The object must be simple enough to render as flat illustration — no complex scenes.
-7. Tagline should ideally carry a double meaning or pun tied to the film's theme — NOT a description of the object.
+5. SPECIFICITY OVER GENERALITY: "a cassette tape with one side rewound" beats "a tape player".
+   Pull details from what the celebrity actually described — named objects, named places, named feelings.
+6. The object must be renderable as a clean flat illustration — no complex multi-object scenes.
+7. Tagline: thematic double meaning tied to the film, NOT a description of the object.
 
 Respond ONLY as valid JSON, no markdown:
 {{
-  "coreSymbol": "precise object description grounded in the transcript — include structural details that encode character count or central tension. Be specific: 'three keys on a ring, one bent' not just 'keys'; 'a phone face-down on a table' not just 'a phone'.",
-  "dominantHex": "#XXXXXX — the film's emotional color",
+  "coreSymbol": "precise object with specific structural details — explain what it is AND what it means about the film",
+  "dominantHex": "#XXXXXX",
   "emotionalTone": "two words maximum",
-  "tagline": "under 8 words — conceptual, earns its presence through double meaning",
+  "tagline": "under 8 words — earns its place through double meaning",
   "compositionHint": "centered | bottom-third | silhouette | corner-anchor",
-  "symbolSource": "celebrity-said | pre-loaded"
+  "symbolSource": "celebrity-said | film-intel | both",
+  "castCountUsed": 0
 }}
 """.strip()
 
