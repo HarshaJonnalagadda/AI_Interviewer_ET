@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getServerAdmin } from '@/lib/auth/serverAdmin';
 import { createServiceClient } from '@/lib/supabase/service';
 import LogoutButton from '../components/LogoutButton';
+import SessionsPanel from '../components/SessionsPanel';
 
 export default async function AdminDashboard() {
   const admin = await getServerAdmin();
@@ -62,25 +63,7 @@ export default async function AdminDashboard() {
           <div className="admin-col-header">
             <h2>Recent Sessions</h2>
           </div>
-          <div className="admin-list">
-            {!sessions?.length && <div className="admin-empty">No sessions yet.</div>}
-            {sessions?.map((session) => (
-              <div key={session.id} className="admin-row">
-                <div>
-                  <div className="admin-row-title">{session.film_name} — {session.celebrity_name}</div>
-                  <div className="admin-row-sub">
-                    {new Date(session.created_at).toLocaleDateString()} · {session.status}
-                  </div>
-                </div>
-                <div className="admin-row-actions">
-                  <Link href={`/admin/session/${session.id}`} className="admin-link">View</Link>
-                  {session.status !== 'completed' && session.status !== 'poster_generated' && (
-                    <Link href={`/interview/${session.id}`} className="admin-link">▶ Interview</Link>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+          <SessionsPanel sessions={sessions ?? []} />
         </section>
       </div>
     </div>
