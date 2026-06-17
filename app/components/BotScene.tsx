@@ -128,7 +128,6 @@ export default function BotScene({
   questionText,
   statusText,
   footerRight,
-  answer,
   chatHistory,
   waveLevel,
   progressCurrent,

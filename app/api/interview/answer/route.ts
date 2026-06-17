@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
   if (film.language !== 'en' && !isAlreadyEnglish) {
     try {
       translation = await translateText(transcript, film.language as 'te' | 'hi');
-    } catch (e) {
+    } catch {
       translation = transcript; // show original if translation fails
     }
   }
