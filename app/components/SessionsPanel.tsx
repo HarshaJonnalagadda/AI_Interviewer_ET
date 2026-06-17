@@ -23,7 +23,6 @@ interface Props {
 
 export default function SessionsPanel({ sessions }: Props) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [downloading, setDownloading] = useState(false);
 
   const posterSessions = sessions.filter((s) => s.posters?.length > 0);
 
@@ -36,27 +35,22 @@ export default function SessionsPanel({ sessions }: Props) {
     });
   };
 
-  const downloadSelected = useCallback(async () => {
-    setDownloading(true);
-    try {
-      const selected = sessions.filter((s) => selectedIds.has(s.id));
-      for (const session of selected) {
-        for (let i = 0; i < session.posters.length; i++) {
-          const poster = session.posters[i];
-          const res = await fetch(poster.storage_url);
-          const blob = await res.blob();
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `${session.film_name.replace(/\s+/g, '-')}-${session.celebrity_name.replace(/\s+/g, '-')}-poster-${i + 1}.png`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-        }
+  const downloadSelected = useCallback(() => {
+    const selected = sessions.filter((s) => selectedIds.has(s.id));
+    // Route through /api/download/poster proxy — avoids CORS and browser
+    // async-gesture restrictions. Each <a> click is synchronous.
+    for (const session of selected) {
+      for (let i = 0; i < session.posters.length; i++) {
+        const poster = session.posters[i];
+        const filename = `${session.film_name.replace(/\s+/g, '-')}-${session.celebrity_name.replace(/\s+/g, '-')}-poster-${i + 1}.png`;
+        const proxyUrl = `/api/download/poster?url=${encodeURIComponent(poster.storage_url)}&filename=${encodeURIComponent(filename)}`;
+        const a = document.createElement('a');
+        a.href = proxyUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
       }
-    } finally {
-      setDownloading(false);
     }
   }, [sessions, selectedIds]);
 
@@ -78,9 +72,8 @@ export default function SessionsPanel({ sessions }: Props) {
             type="button"
             className="sessions-dl-btn"
             onClick={downloadSelected}
-            disabled={downloading}
           >
-            {downloading ? 'Downloading…' : `Download Posters`}
+            {selectedCount > 1 ? `Download ${selectedCount} Posters` : 'Download Poster'}
           </button>
         </div>
       )}

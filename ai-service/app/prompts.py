@@ -170,23 +170,43 @@ nothing else — no labels, no quotes, no explanation.
 
 def poster_extraction_prompt(film: FilmContext, pack: FilmIntelligencePack, transcript: str) -> str:
     high_confidence_motifs = ", ".join(m.motif for m in pack.visual_motifs if m.confidence == "high")
+    cast_count = len(film.lead_actors) if film.lead_actors else 1
+    cast_line = (
+        f"Lead cast ({cast_count} people): {', '.join(film.lead_actors)}"
+        if film.lead_actors else
+        f"Celebrity: {film.celebrity_name}"
+    )
+
     return f"""
-Based on this interview transcript, extract poster design elements.
-The celebrity's own words take PRIORITY over pre-loaded motifs.
+You are designing a minimalist Indian film poster in the tradition of Andhadhun, Dil Se, OK Kanmani, and Piku.
+Your task: extract the SINGLE visual metaphor object that carries the entire soul of this film.
 
 Film: {film.film_name}
-Known motifs (fallback only): {high_confidence_motifs or "none"}
-Known palette (fallback only): {", ".join(pack.dominant_colors)}
+{cast_line}
+Known motifs (use only if transcript gives nothing better): {high_confidence_motifs or "none"}
+Known palette: {", ".join(pack.dominant_colors)}
 
-Transcript:
+Interview transcript:
 {transcript}
+
+SYMBOL DESIGN RULES:
+1. The celebrity's own words about this film take absolute priority.
+2. The coreSymbol must be ONE concrete object — drawable as a flat vector illustration.
+3. The symbol must work on TWO levels: (a) what it literally is, (b) what it secretly means about the film.
+4. CHARACTER COUNT RULE: If there are {cast_count} main characters, encode that count in the symbol cleverly.
+   Examples: 3-person love story → object naturally occurring in threes, or a familiar object cracked/split into 3;
+   2-person romance → two fish in a bowl, two straws in one glass; single protagonist → one iconic object.
+   A "broken heart" split into {cast_count} is valid ONLY if {cast_count} == 2 and the film is specifically about heartbreak.
+   Prefer SURPRISING SPECIFICITY: "3 cocktail glasses, two touching and one tipped away" beats "a broken heart".
+5. The object must be simple enough to render as flat illustration — no complex scenes.
+6. Tagline should ideally carry a double meaning or pun tied to the film's theme.
 
 Respond ONLY as valid JSON, no markdown:
 {{
-  "coreSymbol": "one concrete visually renderable object — the single prop the celebrity returned to most",
-  "dominantHex": "#XXXXXX — color of the film's emotional register",
+  "coreSymbol": "precise object description — include structural details that encode character count or central tension (e.g. 'three cocktail glasses arranged in a triangle, the center one half-empty' not just 'a cocktail glass')",
+  "dominantHex": "#XXXXXX — the film's emotional color",
   "emotionalTone": "two words maximum",
-  "tagline": "under 8 words, evocative not promotional",
+  "tagline": "under 8 words — conceptual, earns its presence through double meaning",
   "compositionHint": "centered | bottom-third | silhouette | corner-anchor",
   "symbolSource": "celebrity-said | pre-loaded"
 }}
@@ -199,25 +219,35 @@ def poster_image_prompt(
     director: str | None = None,
     lead_actors: list[str] | None = None,
 ) -> str:
-    lead_line = ""
-    if lead_actors:
-        actors_str = "  ·  ".join(lead_actors)
-        lead_line = f'Lead cast text "{actors_str}" in very small spaced caps near the top of the poster, understated, high contrast.\n'
-
-    director_line = ""
-    if director:
-        director_line = f'Below the title, in very small caps: "DIRECTED BY {director.upper()}", tight letter-spacing, same high-contrast color as title.\n'
+    actors_str = "   ·   ".join(a.upper() for a in lead_actors) if lead_actors else ""
+    lead_line = (
+        f'Top of poster, centered: "{actors_str}" in very small ALL-CAPS letter-spaced type, high contrast.\n'
+        if actors_str else ""
+    )
+    director_line = (
+        f'Directly below the film title: "DIRECTED BY {director.upper()}" in very small caps, same high-contrast color.\n'
+        if director else ""
+    )
 
     return f"""
-Minimalist movie poster. Saul Bass inspired. Flat graphic design.
-No photorealism. No people. No faces. No text other than specified.
+Indian minimalist film poster. Flat vector illustration. NOT photorealism.
 
-Central element: {extraction.core_symbol}, {extraction.composition_hint}.
-Background: solid color wash {extraction.dominant_hex}, subtle gradient light to dark top to bottom.
-{lead_line}Tagline "{extraction.tagline}" in small caps above the central element, understated.
-Film title "{film_name}" in bold geometric sans-serif, large, legible, high contrast — placed in the lower third.
-{director_line}Negative space is dominant. The object floats in silence.
-Aspect ratio 2:3 portrait. High contrast edges. No clutter. No textures. No gradients on the object.
+STYLE: The poster tradition of Andhadhun (glasses with piano-key lenses), Dil Se (train seen from above), OK Kanmani (goldfish bowl), Piku (car with commode on roof). Single clever metaphor object. Everything else is negative space.
+
+BACKGROUND: Flat solid {extraction.dominant_hex}. Subtle paper/grain noise texture at 3% opacity for analog warmth. No gradient wash.
+
+CENTRAL OBJECT — {extraction.core_symbol}.
+Placement: {extraction.composition_hint}. Occupies approximately 55% of canvas height.
+Render as clean flat illustration with precise edges and high contrast against the background.
+If human figures are needed to convey scale or relationship: render them as small black silhouettes only — no faces, no detail, pure shape.
+Object must be immediately recognizable as a flat graphic icon. No painterly strokes. No shadows except flat cast shadow if essential.
+
+TEXT — render exactly these, no other text at all:
+{lead_line}Tagline "{extraction.tagline}" — small italic caps, centered, subtle — placed just above the central object.
+Film title "{film_name}" — bold geometric sans-serif, large, dominant — lower third of poster, high contrast.
+{director_line}
+RULES: No studio logos. No review quotes. No paragraph text. The image does the talking.
+Portrait 2:3 ratio. Museum-quality precision. Clean geometry. The "aha moment" is more important than decoration.
 """.strip()
 
 
