@@ -100,27 +100,8 @@ export default function InterviewClient(props: Props) {
     };
   }, []);
 
-  // Play the viewer greeting aloud when the page first loads in greeting phase
-  useEffect(() => {
-    if (props.status !== 'greeting') return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const res = await fetch('/api/interview/greet', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sessionId: props.sessionId }),
-        });
-        if (!res.ok || cancelled) return;
-        const data = await res.json();
-        if (!cancelled) playAudio(data.audioBase64, data.mimeType, () => {});
-      } catch {
-        // greeting audio is optional — silently skip if browser blocks autoplay
-      }
-    })();
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Greeting audio is played inside beginInterview (user-gesture context)
+  // so browsers allow it. Do not auto-play on mount — autoplay is blocked.
 
   // Already finished — go straight to the poster reveal
   useEffect(() => {
@@ -163,8 +144,23 @@ export default function InterviewClient(props: Props) {
   }, []);
 
   const beginInterview = useCallback(async () => {
-    setPhase('loading');
+    setPhase('speaking');
     setErrorMsg(null);
+
+    // Play viewer greeting now — inside user gesture so autoplay is allowed
+    try {
+      const greetRes = await fetch('/api/interview/greet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: props.sessionId }),
+      });
+      if (greetRes.ok) {
+        const greetData = await greetRes.json();
+        await new Promise<void>((resolve) => playAudio(greetData.audioBase64, greetData.mimeType, resolve));
+      }
+    } catch { /* greeting audio is optional */ }
+
+    setPhase('loading');
     try {
       const res = await fetch('/api/interview/begin', {
         method: 'POST',

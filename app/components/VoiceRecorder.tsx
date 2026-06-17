@@ -172,25 +172,29 @@ export default function VoiceRecorder({ active, onResult, onLevel, onRecordingCh
 
           if (isSpeech) {
             hasSpokeRef.current = true;
-            silenceStartRef.current = null;
+            silenceStartRef.current = null;  // reset silence timer on speech
             if (silenceProgressRef.current !== 0) {
               silenceProgressRef.current = 0;
               setSilenceProgress(0);
             }
             setVadPhase('speaking');
-          } else if (hasSpokeRef.current) {
+          } else {
+            // Silence — count down whether or not speech has been detected yet
             if (silenceStartRef.current === null) silenceStartRef.current = now;
             const silenceDuration = now - silenceStartRef.current;
 
             if (elapsed >= VAD_CONFIG.minRecordingMs) {
               const progress = silenceDuration / VAD_CONFIG.silenceThresholdMs;
               const clamped = Math.min(progress, 1);
-              // Only update state when value moves enough to avoid thrashing renders
               if (Math.abs(clamped - silenceProgressRef.current) > 0.02) {
                 silenceProgressRef.current = clamped;
                 setSilenceProgress(clamped);
               }
-              setVadPhase(clamped > 0.05 ? 'finishing' : 'speaking');
+              // Show countdown bar early after speech; hold 'waiting' longer before speech
+              const finishThreshold = hasSpokeRef.current ? 0.05 : 0.5;
+              setVadPhase(
+                clamped > finishThreshold ? 'finishing' : hasSpokeRef.current ? 'speaking' : 'waiting'
+              );
 
               if (silenceDuration >= VAD_CONFIG.silenceThresholdMs) {
                 stop();
