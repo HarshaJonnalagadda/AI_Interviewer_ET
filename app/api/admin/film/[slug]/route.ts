@@ -42,6 +42,8 @@ export async function PUT(req: NextRequest, { params }: { params: { slug: string
     avoidTopics,
     sessionTitle,
     contextNotes,
+    director,
+    leadActors,
   } = body;
 
   const supabase = createServiceClient();
@@ -58,6 +60,8 @@ export async function PUT(req: NextRequest, { params }: { params: { slug: string
       avoid_topics: avoidTopics || [],
       session_title: sessionTitle || null,
       context_notes: contextNotes || null,
+      director: director || null,
+      lead_actors: leadActors || [],
     })
     .eq('slug', params.slug)
     .eq('admin_id', adminId)

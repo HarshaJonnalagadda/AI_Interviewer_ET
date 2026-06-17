@@ -190,6 +190,8 @@ class PosterGenerateRequest(CamelModel):
     film_name: str
     extraction: PosterExtraction
     variants: int = 3
+    director: str | None = None
+    lead_actors: list[str] = []
 
 
 class PosterVariant(CamelModel):

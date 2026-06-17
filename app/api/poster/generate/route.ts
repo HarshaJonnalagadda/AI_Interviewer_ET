@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
   // 2. Generate poster image variants
   let generated;
   try {
-    generated = await generatePosterImages(film.film_name, extraction, 3);
+    generated = await generatePosterImages(film.film_name, extraction, 3, film.director, film.lead_actors);
   } catch (e) {
     return NextResponse.json({ error: e instanceof Error ? e.message : 'Image generation failed' }, { status: 502 });
   }

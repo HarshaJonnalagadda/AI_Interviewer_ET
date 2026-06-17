@@ -29,7 +29,7 @@ async def extract(req: PosterExtractRequest) -> PosterExtractResponse:
 
 @router.post("/poster/generate", response_model=PosterGenerateResponse)
 async def generate(req: PosterGenerateRequest) -> PosterGenerateResponse:
-    prompt = poster_image_prompt(req.film_name, req.extraction)
+    prompt = poster_image_prompt(req.film_name, req.extraction, req.director, req.lead_actors or [])
 
     if get_settings().ideogram_api_key:
         try:

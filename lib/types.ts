@@ -42,6 +42,8 @@ export interface FilmConfig {
   avoid_topics: string[];
   session_title: string | null;
   context_notes: string | null;
+  director: string | null;
+  lead_actors: string[];
   active: boolean;
   created_at: string;
 }

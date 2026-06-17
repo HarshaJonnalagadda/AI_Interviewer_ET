@@ -118,7 +118,9 @@ export async function extractPosterElements(
 export async function generatePosterImages(
   filmName: string,
   extraction: PosterExtraction,
-  variants = 3
+  variants = 3,
+  director?: string | null,
+  leadActors?: string[]
 ): Promise<{ variants: { imageBase64: string; mimeType: string }[]; prompt: string }> {
-  return call('/poster/generate', { filmName, extraction, variants });
+  return call('/poster/generate', { filmName, extraction, variants, director: director ?? null, leadActors: leadActors ?? [] });
 }

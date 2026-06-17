@@ -34,6 +34,8 @@ export async function POST(req: NextRequest) {
     avoidTopics,
     sessionTitle,
     contextNotes,
+    director,
+    leadActors,
   } = body;
 
   if (!filmName || !language || !celebrityName || !celebrityRole) {
@@ -66,6 +68,8 @@ export async function POST(req: NextRequest) {
       avoid_topics: avoidTopics || [],
       session_title: sessionTitle || null,
       context_notes: contextNotes || null,
+      director: director || null,
+      lead_actors: leadActors || [],
     })
     .select()
     .single();

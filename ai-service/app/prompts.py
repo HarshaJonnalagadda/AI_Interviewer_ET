@@ -192,16 +192,30 @@ Respond ONLY as valid JSON, no markdown:
 """.strip()
 
 
-def poster_image_prompt(film_name: str, extraction: PosterExtraction) -> str:
+def poster_image_prompt(
+    film_name: str,
+    extraction: PosterExtraction,
+    director: str | None = None,
+    lead_actors: list[str] | None = None,
+) -> str:
+    lead_line = ""
+    if lead_actors:
+        actors_str = "  ·  ".join(lead_actors)
+        lead_line = f'Lead cast text "{actors_str}" in very small spaced caps near the top of the poster, understated, high contrast.\n'
+
+    director_line = ""
+    if director:
+        director_line = f'Below the title, in very small caps: "DIRECTED BY {director.upper()}", tight letter-spacing, same high-contrast color as title.\n'
+
     return f"""
 Minimalist movie poster. Saul Bass inspired. Flat graphic design.
 No photorealism. No people. No faces. No text other than specified.
 
 Central element: {extraction.core_symbol}, {extraction.composition_hint}.
 Background: solid color wash {extraction.dominant_hex}, subtle gradient light to dark top to bottom.
-Film title "{film_name}" in bold geometric sans-serif at bottom, large, legible, high contrast against background.
-Tagline "{extraction.tagline}" in small caps above central element, understated.
-Negative space is dominant. The object floats in silence.
+{lead_line}Tagline "{extraction.tagline}" in small caps above the central element, understated.
+Film title "{film_name}" in bold geometric sans-serif, large, legible, high contrast — placed in the lower third.
+{director_line}Negative space is dominant. The object floats in silence.
 Aspect ratio 2:3 portrait. High contrast edges. No clutter. No textures. No gradients on the object.
 """.strip()
 

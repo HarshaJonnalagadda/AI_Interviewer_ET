@@ -21,6 +21,8 @@ export default function FilmForm({ mode, initial }: FilmFormProps) {
   const [avoidTopics, setAvoidTopics] = useState((initial?.avoid_topics ?? []).join(', '));
   const [sessionTitle, setSessionTitle] = useState(initial?.session_title ?? '');
   const [contextNotes, setContextNotes] = useState(initial?.context_notes ?? '');
+  const [director, setDirector] = useState(initial?.director ?? '');
+  const [leadActors, setLeadActors] = useState((initial?.lead_actors ?? []).join(', '));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,6 +45,11 @@ export default function FilmForm({ mode, initial }: FilmFormProps) {
         .filter(Boolean),
       sessionTitle,
       contextNotes,
+      director: director.trim() || null,
+      leadActors: leadActors
+        .split(',')
+        .map((a) => a.trim())
+        .filter(Boolean),
     };
 
     try {
@@ -121,6 +128,14 @@ export default function FilmForm({ mode, initial }: FilmFormProps) {
         <label>
           Session Title
           <input value={sessionTitle} onChange={(e) => setSessionTitle(e.target.value)} placeholder="Paradise Promo — June 2026" />
+        </label>
+        <label>
+          Director
+          <input value={director} onChange={(e) => setDirector(e.target.value)} placeholder="S. S. Rajamouli" />
+        </label>
+        <label>
+          Lead Actors (comma separated)
+          <input value={leadActors} onChange={(e) => setLeadActors(e.target.value)} placeholder="Ram Charan, Jr NTR" />
         </label>
         <label className="admin-form-full">
           Avoid Topics (comma separated)
