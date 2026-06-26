@@ -233,7 +233,7 @@ Use ALL of the above, but weight them in this order:
 6. The object must be renderable as a clean flat illustration — no complex multi-object scenes.
 7. Tagline: thematic double meaning tied to the film, NOT a description of the object.
 
-Respond ONLY as valid JSON, no markdown:
+Output ONLY the JSON object below — no preamble, no explanation, no markdown fences, no text before or after it.
 {{
   "coreSymbol": "one concise phrase naming the object with its specific structural detail, e.g. 'a cassette tape with one side rewound'",
   "dominantHex": "#XXXXXX",

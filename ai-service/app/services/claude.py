@@ -109,7 +109,25 @@ def complete_with_image(prompt: str, image_base64: str, media_type: str, max_tok
 
 
 def complete_json(prompt: str, max_tokens: int = 2000) -> dict:
-    """Sends a single-turn prompt expecting a JSON object back, tolerating markdown fences."""
+    """Sends a single-turn prompt expecting a JSON object back.
+
+    Tolerates markdown code fences and stray preamble/trailing text around
+    the JSON object — models occasionally add a sentence before or after
+    the object even when told not to.
+    """
     text = complete(system=None, messages=[{"role": "user", "content": prompt}], max_tokens=max_tokens)
     cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", text.strip())
-    return json.loads(cleaned)
+
+    try:
+        return json.loads(cleaned)
+    except json.JSONDecodeError:
+        first = cleaned.find("{")
+        last = cleaned.rfind("}")
+        if first == -1 or last == -1 or last < first:
+            logger.error("complete_json: no JSON object found in response: %r", text[:2000])
+            raise
+        try:
+            return json.loads(cleaned[first : last + 1])
+        except json.JSONDecodeError:
+            logger.error("complete_json: failed to parse extracted JSON: %r", cleaned[first : last + 1][:2000])
+            raise
