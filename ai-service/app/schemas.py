@@ -59,6 +59,8 @@ class FilmContext(CamelModel):
     avoid_topics: list[str] = []
     context_notes: str | None = None
     movie_language: str | None = None
+    director: str | None = None
+    lead_actors: list[str] = []
 
 
 class ProcessedSource(CamelModel):

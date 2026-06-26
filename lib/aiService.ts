@@ -31,6 +31,8 @@ export function filmContext(film: FilmConfig) {
     avoidTopics: film.avoid_topics,
     contextNotes: film.context_notes ?? undefined,
     movieLanguage: film.movie_language ?? undefined,
+    director: film.director ?? undefined,
+    leadActors: film.lead_actors ?? [],
   };
 }
 
