@@ -5,6 +5,8 @@ import { createServiceClient } from '@/lib/supabase/service';
 
 const LANGUAGE_LABELS: Record<string, string> = { te: 'Telugu', hi: 'Hindi', en: 'English' };
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminSessionPage({ params }: { params: { id: string } }) {
   const admin = await getServerAdmin();
   const supabase = createServiceClient();

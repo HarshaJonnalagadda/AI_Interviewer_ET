@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation';
 import { createServiceClient } from '@/lib/supabase/service';
 import RevealClient from './RevealClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function RevealPage({ params }: { params: { sessionId: string } }) {
   const supabase = createServiceClient();
 

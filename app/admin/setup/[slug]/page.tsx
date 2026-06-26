@@ -6,6 +6,8 @@ import IntelligencePanel from '../../../components/IntelligencePanel';
 import SourcesPanel from '../../../components/SourcesPanel';
 import type { FilmConfig, FilmIntelligencePack, IngestionSource } from '@/lib/types';
 
+export const dynamic = 'force-dynamic';
+
 export default async function FilmSetupPage({ params }: { params: { slug: string } }) {
   const admin = await getServerAdmin();
   const supabase = createServiceClient();

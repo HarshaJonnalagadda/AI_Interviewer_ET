@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation';
 import { createServiceClient } from '@/lib/supabase/service';
 import InterviewClient from './InterviewClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function InterviewPage({ params }: { params: { sessionId: string } }) {
   const supabase = createServiceClient();
 
