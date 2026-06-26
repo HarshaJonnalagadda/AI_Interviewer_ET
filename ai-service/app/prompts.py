@@ -235,7 +235,7 @@ Use ALL of the above, but weight them in this order:
 
 Respond ONLY as valid JSON, no markdown:
 {{
-  "coreSymbol": "precise object with specific structural details — explain what it is AND what it means about the film",
+  "coreSymbol": "one concise phrase naming the object with its specific structural detail, e.g. 'a cassette tape with one side rewound'",
   "dominantHex": "#XXXXXX",
   "emotionalTone": "two words maximum",
   "tagline": "under 8 words — earns its place through double meaning",
