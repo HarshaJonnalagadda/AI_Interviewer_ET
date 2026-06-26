@@ -1,3 +1,4 @@
+import json
 import logging
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -25,10 +26,14 @@ router = APIRouter(dependencies=[Depends(require_api_key)])
 async def extract(req: PosterExtractRequest) -> PosterExtractResponse:
     try:
         raw = complete_json(poster_extraction_prompt(req.film, req.pack, req.transcript), max_tokens=1000)
-        return PosterExtractResponse(extraction=PosterExtraction.model_validate(raw))
-    except Exception:
-        logger.exception("Poster extraction failed to produce valid JSON")
+    except json.JSONDecodeError:
+        logger.exception("Poster extraction: model response was not valid JSON")
         raise HTTPException(status_code=502, detail="Poster extraction failed — model did not return valid JSON")
+    except Exception as e:
+        logger.exception("Poster extraction: upstream AI call failed")
+        raise HTTPException(status_code=502, detail=f"Poster extraction failed — AI call error: {e}")
+
+    return PosterExtractResponse(extraction=PosterExtraction.model_validate(raw))
 
 
 @router.post("/poster/generate", response_model=PosterGenerateResponse)
