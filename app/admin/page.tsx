@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { getServerAdmin } from '@/lib/auth/serverAdmin';
 import { createServiceClient } from '@/lib/supabase/service';
-import LogoutButton from '../components/LogoutButton';
 import SessionsPanel from '../components/SessionsPanel';
+
+export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboard() {
   const admin = await getServerAdmin();
@@ -28,7 +29,6 @@ export default async function AdminDashboard() {
           <div className="bot-name" style={{ fontSize: 18, marginBottom: 0 }}>sc·ai</div>
           <div className="bot-sub" style={{ marginBottom: 0 }}>Star Canvas · Admin</div>
         </div>
-        <LogoutButton />
       </header>
 
       <div className="admin-columns">

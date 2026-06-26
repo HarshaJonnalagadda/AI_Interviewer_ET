@@ -1,8 +1,13 @@
-import { NextRequest } from 'next/server';
-import { SESSION_COOKIE, verifySessionToken } from './session';
+import { createServiceClient } from '@/lib/supabase/service';
 
-export async function getAdminId(req: NextRequest): Promise<string | null> {
-  const token = req.cookies.get(SESSION_COOKIE)?.value;
-  const session = token ? await verifySessionToken(token) : null;
-  return session?.adminId ?? null;
+export async function getAdminId(): Promise<string | null> {
+  const supabase = createServiceClient();
+  const { data } = await supabase
+    .from('admins')
+    .select('id')
+    .order('created_at', { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  return data?.id ?? null;
 }

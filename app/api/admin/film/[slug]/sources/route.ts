@@ -5,7 +5,7 @@ import { getAdminId } from '@/lib/auth/requireAdmin';
 const LINK_SOURCE_TYPES = ['teaser', 'trailer', 'song', 'interview', 'reference'] as const;
 
 export async function GET(req: NextRequest, { params }: { params: { slug: string } }) {
-  const adminId = await getAdminId(req);
+  const adminId = await getAdminId();
   if (!adminId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const supabase = createServiceClient();
@@ -30,7 +30,7 @@ export async function GET(req: NextRequest, { params }: { params: { slug: string
 }
 
 export async function POST(req: NextRequest, { params }: { params: { slug: string } }) {
-  const adminId = await getAdminId(req);
+  const adminId = await getAdminId();
   if (!adminId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { sourceType, sourceUrl } = await req.json();

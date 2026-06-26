@@ -3,7 +3,7 @@ import { createServiceClient } from '@/lib/supabase/service';
 import { getAdminId } from '@/lib/auth/requireAdmin';
 
 export async function DELETE(req: NextRequest, { params }: { params: { slug: string; id: string } }) {
-  const adminId = await getAdminId(req);
+  const adminId = await getAdminId();
   if (!adminId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const supabase = createServiceClient();

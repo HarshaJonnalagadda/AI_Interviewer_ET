@@ -3,8 +3,10 @@ import { createServiceClient } from '@/lib/supabase/service';
 import { getAdminId } from '@/lib/auth/requireAdmin';
 import { slugify } from '@/lib/slug';
 
-export async function GET(req: NextRequest) {
-  const adminId = await getAdminId(req);
+export const dynamic = 'force-dynamic';
+
+export async function GET() {
+  const adminId = await getAdminId();
   if (!adminId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const supabase = createServiceClient();
@@ -19,7 +21,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const adminId = await getAdminId(req);
+  const adminId = await getAdminId();
   if (!adminId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const body = await req.json();
