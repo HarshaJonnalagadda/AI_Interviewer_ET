@@ -6,6 +6,7 @@ export async function getServerAdmin(): Promise<{ adminId: string; email: string
     .from('admins')
     .select('id, email')
     .order('created_at', { ascending: true })
+    .order('id', { ascending: true })
     .limit(1)
     .maybeSingle();
 
